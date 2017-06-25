@@ -22,7 +22,7 @@ set(ALTSHARED_SOURCE
 
         StringUtil.cpp
         WriteBuffer.cpp
-        ReadStringBuffer.cpp ReadBuffer.cpp)
+        ReadStringBuffer.cpp ReadBuffer.cpp File.cpp)
 
 add_library(AltShared ${ALTSHARED_SOURCE})
 target_link_libraries(AltShared mbedtls event_core event_extra zlibstatic ${CMAKE_THREAD_LIBS_INIT})
