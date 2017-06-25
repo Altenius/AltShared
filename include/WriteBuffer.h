@@ -2,85 +2,54 @@
 #define ALTMANAGE_PACKETBUFFER_H
 
 #include <string>
+#include <vector>
 
 class WriteBuffer
 {
 public:
     WriteBuffer();
 
-    /* Writes a 32 bit integer encoded in little endian to the buffer */
-    void writeLEInt(int32_t n);
-
-    /* Writes an unsigned 32 bit integer encoded in little endian to the buffer */
-    void writeLEUInt(uint32_t n);
-
-    /* Writes a 16 bit integer encoded in little endian to the buffer */
-    void writeLEInt16(int16_t n);
-
-    /* Writes an unsigned 16 bit integer encoded in little endian to the buffer */
-    void writeLEUInt16(uint16_t n);
-
-    /* Writes a 64 bit integer encoded in little endian to the buffer */
-    void writeLEInt64(int64_t n);
-
-    /* Writes an unsigned 64 bit integer encoded in little endian to the buffer */
-    void writeLEUInt64(uint64_t n);
-
-    /* Writes an 8 bit integer encoded in little endian to the buffer */
-    void writeLEInt8(int8_t n);
-
-    /* Writes an unsigned 8 bit integer encoded in little endian to the buffer */
-    void writeLEUInt8(uint8_t n);
 
     /* Writes data of size len to the buffer */
-    void writeLEBuffer(const char *data, size_t len);
-
-
-    /* Writes a 32 bit integer encoded in big endian to the buffer */
-    void writeBEInt(int32_t n);
-
-    /* Writes an unsigned 32 bit integer encoded in big endian to the buffer */
-    void writeBEUInt(uint32_t n);
-
-    /* Writes a 16 bit integer encoded in big endian to the buffer */
-    void writeBEInt16(int16_t n);
-
-    /* Writes an unsigned 16 bit integer encoded in big endian to the buffer */
-    void writeBEUInt16(uint16_t n);
-
-    /* Writes a 64 bit integer encoded in big endian to the buffer */
-    void writeBEInt64(int64_t n);
-
-    /* Writes an unsigned 64 bit integer encoded in big endian to the buffer */
-    void writeBEUInt64(uint64_t n);
-
-    /* Writes an 8 bit integer encoded in big endian to the buffer */
-    void writeBEInt8(int8_t n);
-
-    /* Writes an unsigned 8 bit integer encoded in big endian to the buffer */
-    void writeBEUInt8(uint8_t n);
-
-    /* Writes data of size len to the buffer */
-    void writeBEBuffer(const char *data, size_t len);
+    virtual void writeBuffer(const char *data, size_t len) =0;
 
 
 
-    inline const char *data()
+    void writeVector(const std::vector<char> &b)
     {
-        return buffer_.data();
+        writeBuffer(b.data(), b.size());
     }
 
 
 
-    inline size_t size()
+    /* Writes a string to the buffer. Strings are written by
+     * writing a uint32_t of the size of the string in big endian
+     * andthen writing the char array */
+    void writeString(const std::string &string);
+
+
+
+    template<typename T>
+    void writeLE(const T &n)
     {
-        return buffer_.size();
+        char data[sizeof(T)];
+        for (size_t i = 0; i < sizeof(T); ++i) {
+            data[i] = (n >> (8 * i)) & 0xFF;
+        }
+        writeBuffer(data, sizeof(T));
     }
 
 
 
-private:
-    std::string buffer_;
+    template<typename T>
+    void writeBE(const T &n)
+    {
+        char data[sizeof(T)];
+        for (size_t i = 0; i < sizeof(T); ++i) {
+            data[sizeof(n) - i - 1] = (n >> (8 * i)) & 0xFF;
+        }
+        writeBuffer(data, sizeof(T));
+    }
 };
 
 

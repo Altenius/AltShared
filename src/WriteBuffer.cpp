@@ -2,27 +2,15 @@
 
 
 
-void WriteBuffer::writeLEInt(int32_t n)
+WriteBuffer::WriteBuffer()
 {
-    char data[4];
-    data[0] = n & 0xFF;
-    data[1] = (n >> 8) & 0xFF;
-    data[2] = (n >> 16) & 0xFF;
-    data[3] = n >> 24;
 
-    buffer_.append(data, 4);
 }
 
 
 
-void WriteBuffer::writeLEUInt(uint32_t n)
+void WriteBuffer::writeString(const std::string &string)
 {
-    char data[4];
-    data[0] = n & 0xFF;
-    data[1] = (n >> 8) & 0xFF;
-    data[2] = (n >> 16) & 0xFF;
-    data[3] = n >> 24;
-
-    buffer_.append(data, 4);
+    writeBE<uint32_t>(string.size());
+    writeBuffer(string.data(), string.size());
 }
-

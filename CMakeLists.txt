@@ -15,7 +15,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/lib/libevent/include)
 include_directories(lib/mbedtls/include)
 include_directories(lib/zlib)
 
-set(ALTSHARED_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/zlib ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/lib/libevent/include ${CMAKE_CURRENT_SOURCE_DIR}/lib/mbedtls/include ${CMAKE_CURRENT_BINARY_DIR}/lib/libevent/include PARENT_SCOPE)
+set(ALTSHARED_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/zlib ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/lib/libevent/include ${CMAKE_CURRENT_SOURCE_DIR}/lib/mbedtls/include ${CMAKE_CURRENT_BINARY_DIR}/lib/libevent/include)
 
-include_directories(include)
 add_subdirectory(src)
