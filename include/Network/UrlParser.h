@@ -1,8 +1,10 @@
 #ifndef ALT_URLPARSER_H
 #define ALT_URLPARSER_H
+
 #include <string>
 
-class UrlParser {
+class UrlParser
+{
 public:
     static std::pair<bool, std::string> parse(
             const std::string &url,
@@ -15,7 +17,7 @@ public:
             std::string &query,
             std::string &fragment
     );
-    
+
     static std::pair<bool, std::string> parseAuthority(
             const std::string &auth,
             std::string &username,
@@ -23,7 +25,7 @@ public:
             std::string &host,
             unsigned short &port
     );
-    
+
     static unsigned short getDefaultPort(const std::string &scheme);
 };
 

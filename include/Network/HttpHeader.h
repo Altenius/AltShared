@@ -7,31 +7,45 @@
 #include <unordered_map>
 #include <sstream>
 
-class HttpHeader {
+class HttpHeader
+{
 public:
     typedef std::pair<std::string, std::string> EntryType;
     typedef std::vector<EntryType> HeaderType;
     typedef std::unordered_map<std::string, std::string> MapType;
-    
+
     HttpHeader();
 
     void add(const char *name, const char *value);
-    void add(const std::string &name, const std::string &value);
-    void addDefault(const char *name, const std::string &value);
-    
 
-    inline HeaderType &header() {
+    void add(const std::string &name, const std::string &value);
+
+    void addDefault(const char *name, const std::string &value);
+
+
+
+    inline HeaderType &header()
+    {
         return header_;
     }
-    
-    inline MapType &map() {
+
+
+
+    inline MapType &map()
+    {
         return map_;
     }
-    
-    inline void reset() {
+
+
+
+    inline void reset()
+    {
         map_.clear();
         header_.clear();
     }
+
+
+
 private:
     HeaderType header_;
     MapType map_;

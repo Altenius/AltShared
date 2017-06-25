@@ -1,35 +1,50 @@
 #ifndef VOCABBOT_UTIL_H
 #define VOCABBOT_UTIL_H
+
 #include <string>
 #include <algorithm>
 #include <stdexcept>
 #include <sstream>
 #include <vector>
 
-class StringUtil {
+class StringUtil
+{
 public:
-    static inline void ltrim(std::string &s) {
+    static inline void ltrim(std::string &s)
+    {
         s.erase(s.begin(), std::find_if_not(s.begin(), s.end(),
                                             std::ptr_fun<int, int>(std::isspace)));
     }
 
-    static inline void rtrim(std::string &s) {
+
+
+    static inline void rtrim(std::string &s)
+    {
         s.erase(std::find_if_not(s.rbegin(), s.rend(),
                                  std::ptr_fun<int, int>(std::isspace)).base(), s.end());
     }
 
-    static inline void trim(std::string &s) {
+
+
+    static inline void trim(std::string &s)
+    {
         ltrim(s);
         rtrim(s);
     }
 
-    static inline std::string lower(std::string s) {
+
+
+    static inline std::string lower(std::string s)
+    {
         std::transform(s.begin(), s.end(), s.begin(), ::tolower);
         return s;
     }
-    
-    template <typename T>
-    static bool stoi(const std::string &str, T &num, unsigned char base = 10) {
+
+
+
+    template<typename T>
+    static bool stoi(const std::string &str, T &num, unsigned char base = 10)
+    {
         char sign = 1;
         num = 0;
         auto it = str.begin();
@@ -52,12 +67,15 @@ public:
             }
             num = num * base + digit;
         }
-        
+
         num *= sign;
         return true;
     }
-    
-    static inline std::string absolutePath(const std::string &str) {
+
+
+
+    static inline std::string absolutePath(const std::string &str)
+    {
         std::vector<std::string> parts;
         std::string part;
         for (auto it = str.begin(); it <= str.end(); it++) {
@@ -79,20 +97,23 @@ public:
                 part += *it;
             }
         }
-        
+
         if (parts.empty()) {
             return "/";
         }
-        
+
         std::stringstream ns;
         for (std::string p : parts) {
             ns << "/" << p;
         }
-        
+
         return ns.str();
     }
-    
-    static std::string percentEncode(const std::string &str) {
+
+
+
+    static std::string percentEncode(const std::string &str)
+    {
         std::stringstream encoded;
         for (auto it = str.begin(); it != str.end(); it++) {
             switch (*it) {
@@ -115,17 +136,20 @@ public:
                 case '[':
                 case ']':
                 case '%':
-                    encoded << "%" << std::hex << (int)(*it);
+                    encoded << "%" << std::hex << (int) (*it);
                     break;
                 default:
                     encoded << *it;
             }
         }
-        
+
         return encoded.str();
     }
-    
-    static bool percentDecode(const std::string &str, std::string &decoded) {
+
+
+
+    static bool percentDecode(const std::string &str, std::string &decoded)
+    {
         unsigned char decoding = 0;
         char c = 0;
         for (auto it = str.begin(); it != str.end(); it++) {
@@ -162,7 +186,7 @@ public:
                     default:
                         return false;
                 }
-                
+
                 if (decoding == 2) {
                     decoding = 0;
                     decoded.push_back(c);
@@ -176,7 +200,7 @@ public:
                 decoded.push_back(*it);
             }
         }
-        
+
         return decoding == 0;
     }
 };
