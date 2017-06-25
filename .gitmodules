@@ -1,0 +1,6 @@
+[submodule "lib/libevent"]
+	path = lib/libevent
+	url = https://github.com/libevent/libevent.git
+[submodule "lib/mbedtls"]
+	path = lib/mbedtls
+	url = https://github.com/ARMmbed/mbedtls.git
