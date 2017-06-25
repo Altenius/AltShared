@@ -1,9 +1,15 @@
 #include "SSL/EntropyContext.h"
 
-EntropyContext::EntropyContext() {
+
+
+EntropyContext::EntropyContext()
+{
     mbedtls_entropy_init(&context_);
 }
 
-EntropyContext::~EntropyContext() {
+
+
+EntropyContext::~EntropyContext()
+{
     mbedtls_entropy_free(&context_);
 }

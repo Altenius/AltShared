@@ -3,39 +3,42 @@
 #include <algorithm>
 #include <vector>
 
-Cookie Cookie::parse(const std::string &value, const std::string &domain, const std::string &path) {
+
+
+Cookie Cookie::parse(const std::string &value, const std::string &domain, const std::string &path)
+{
     Cookie cookie;
     cookie.domain_ = domain;
-    
+
     if (path == "/") {
         cookie.path_ = "/";
     } else {
         size_t lastSlash = path.find_last_of('/');
         cookie.path_ = path.substr(0, lastSlash);
     }
-    
+
     size_t sEnd = value.find(';');
     bool extra = true;
     if (sEnd == std::string::npos) {
         extra = false;
         sEnd = value.size();
     }
-    
+
     std::string cookiePair = value.substr(0, sEnd);
     size_t nameEnd = cookiePair.find('=');
     if (nameEnd == std::string::npos) { // invalid
         return cookie;
     }
-    
+
     cookie.name_ = value.substr(0, nameEnd);
     cookie.value_ = value.substr(nameEnd + 1, sEnd - nameEnd - 1);
     StringUtil::trim(cookie.name_);
     StringUtil::trim(cookie.value_);
-    
+
     if (!cookie.valid()) {
         return cookie;
     }
-    
+
     if (extra) {
         size_t last = sEnd;
         do {
@@ -43,7 +46,7 @@ Cookie Cookie::parse(const std::string &value, const std::string &domain, const 
             if (sEnd == std::string::npos) {
                 sEnd = value.size();
             }
-            
+
             std::string avString = value.substr(last + 1, sEnd - last - 1);
             StringUtil::trim(avString);
             std::string lAvString = StringUtil::lower(avString);
@@ -58,7 +61,7 @@ Cookie Cookie::parse(const std::string &value, const std::string &domain, const 
                     std::string avValue = StringUtil::lower(avString.substr(avSep + 1));
                     StringUtil::rtrim(avName); // the left was trimmed earlier
                     StringUtil::ltrim(avValue); // ^  right
-                    
+
                     if (avName == "expires") {
                         if (cookie.expires_.time_since_epoch() == std::chrono::system_clock::duration::zero()) {
                             if (!cookie.parseDate(avValue)) {
@@ -68,7 +71,8 @@ Cookie Cookie::parse(const std::string &value, const std::string &domain, const 
                     } else if (avName == "max-age") {
                         unsigned long time;
                         if (StringUtil::stoi(avValue, time)) {
-                            cookie.expires_ = std::chrono::system_clock::now() + std::chrono::system_clock::duration(time);
+                            cookie.expires_ =
+                                    std::chrono::system_clock::now() + std::chrono::system_clock::duration(time);
                         }
                     } else if (avName == "domain") {
                         if (avValue.front() != '.') {
@@ -80,24 +84,34 @@ Cookie Cookie::parse(const std::string &value, const std::string &domain, const 
                     }
                 }
             }
-            
-            
+
+
             last = sEnd;
         } while (last != value.size());
     }
-    
+
     return cookie;
 }
 
-Cookie::Cookie(const std::string &name, const std::string &value) : name_(name), value_(value), expires_(std::chrono::duration<unsigned long>(0)) {
+
+
+Cookie::Cookie(const std::string &name, const std::string &value) : name_(name), value_(value),
+                                                                    expires_(std::chrono::duration<unsigned long>(0))
+{
 
 }
 
-Cookie::Cookie() : expires_(std::chrono::duration<unsigned long>(0)) {
+
+
+Cookie::Cookie() : expires_(std::chrono::duration<unsigned long>(0))
+{
 
 }
 
-unsigned char Cookie::parseMonth(const std::string &abvro) {
+
+
+unsigned char Cookie::parseMonth(const std::string &abvro)
+{
     std::string abvr = StringUtil::lower(abvro);
     if (abvr == "jan") {
         return 1;
@@ -124,15 +138,22 @@ unsigned char Cookie::parseMonth(const std::string &abvro) {
     } else if (abvr == "dec") {
         return 12;
     }
-    
+
     return 0;
 }
 
-bool is_delimeter(char c) {
-    return (c == 0x09 || (c >= 0x20 && c <= 0x2F) || (c >= 0x3B && c <= 0x40) || (c >= 0x5B && c <= 0x60) || (c >= 0x7B && c <= 0x7E));
+
+
+bool is_delimeter(char c)
+{
+    return (c == 0x09 || (c >= 0x20 && c <= 0x2F) || (c >= 0x3B && c <= 0x40) || (c >= 0x5B && c <= 0x60) ||
+            (c >= 0x7B && c <= 0x7E));
 }
 
-bool parseTime(const std::string &token, unsigned int &hour, unsigned int &min, unsigned int &sec) {
+
+
+bool parseTime(const std::string &token, unsigned int &hour, unsigned int &min, unsigned int &sec)
+{
     bool fhour = false, fmin = false;
     std::string n;
     for (auto it = token.begin(); it != token.end(); it++) {
@@ -156,19 +177,22 @@ bool parseTime(const std::string &token, unsigned int &hour, unsigned int &min, 
             return false;
         }
     }
-    
+
     if (!n.empty() && fmin) {
         StringUtil::stoi(n, sec);
         return true;
     }
-    
+
     return false;
 }
 
-bool Cookie::parseDate(const std::string &date) {
+
+
+bool Cookie::parseDate(const std::string &date)
+{
     std::vector<std::string> tokens;
     std::string last;
-    
+
     std::for_each(date.begin(), date.end(), [&tokens, &last](char c) {
         if (!is_delimeter(c)) {
             last += c;
@@ -177,11 +201,11 @@ bool Cookie::parseDate(const std::string &date) {
             last.clear();
         }
     });
-    
+
     if (!last.empty()) {
         tokens.push_back(last);
     }
-    
+
     unsigned int hour, min, sec, day, month, year;
 
     bool found_time = false, found_day_of_month = false, found_month = false, found_year = false;
@@ -217,10 +241,10 @@ bool Cookie::parseDate(const std::string &date) {
             continue;
         }
     }
-    
+
     if (found_time && found_day_of_month && found_month && found_year) {
         std::tm timeinfo = std::tm();
-        
+
         timeinfo.tm_gmtoff = 0;
         timeinfo.tm_zone = "UTC";
         timeinfo.tm_mon = month - 1;
@@ -234,15 +258,18 @@ bool Cookie::parseDate(const std::string &date) {
         expires_ = std::chrono::system_clock::from_time_t(tt);
         return true;
     }
-    
+
     return false;
 }
 
-bool Cookie::usable(const std::string &domain, const std::string &path) {
+
+
+bool Cookie::usable(const std::string &domain, const std::string &path)
+{
     // if (expired()) { // this should be checked before calling this function
-        // return false;
+    // return false;
     // }
-    
+
     if (domain_.front() == '.') {
         if (domain_.size() > domain.size()) {
             return false;
@@ -253,30 +280,39 @@ bool Cookie::usable(const std::string &domain, const std::string &path) {
     } else if (domain != domain_) {
         return false;
     }
-    
+
     if (path.size() < path_.size()) {
         return false;
     }
-    
+
     return path.substr(0, path_.size()) == path_;
 }
 
-CookieJar::CookieJar() {
+
+
+CookieJar::CookieJar()
+{
 
 }
 
-void CookieJar::parse(const std::string &str, const std::string &domain, const std::string &path) {
+
+
+void CookieJar::parse(const std::string &str, const std::string &domain, const std::string &path)
+{
     Cookie c = Cookie::parse(str, domain, path);
-    
+
     if (c.valid()) {
         cookies_.push_back(c);
     }
 }
 
-std::string CookieJar::getCookies(const std::string &domain, const std::string &path) {
+
+
+std::string CookieJar::getCookies(const std::string &domain, const std::string &path)
+{
     std::stringstream ss;
     auto now = std::chrono::system_clock::now();
-    
+
     for (auto it = cookies_.begin(); it != cookies_.end(); it++) {
         if (it->expired(now)) {
             cookies_.erase(it);
@@ -290,6 +326,6 @@ std::string CookieJar::getCookies(const std::string &domain, const std::string &
             ss << it->name() << '=' << it->value();
         }
     }
-    
+
     return ss.str();
 }

@@ -15,14 +15,15 @@ set(ALTSHARED_SOURCE
         Network/TcpServer.cpp
         Network/ContentDecoder.cpp
         Network/TcpServer.cpp
-        
+
         SSL/CtrDrbgContext.cpp
         SSL/EntropyContext.cpp
         SSL/SslContext.cpp
 
         StringUtil.cpp
         WriteBuffer.cpp
-)
+        )
 
 add_library(AltShared ${ALTSHARED_SOURCE})
 target_link_libraries(AltShared mbedtls event_core event_extra zlibstatic ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(AltShared PUBLIC ${ALTSHARED_INCLUDE})

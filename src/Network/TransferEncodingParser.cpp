@@ -4,66 +4,85 @@
 #include <algorithm>
 
 
-class IdentityEncodingParser : public TransferEncodingParser {
+class IdentityEncodingParser : public TransferEncodingParser
+{
     friend TransferEncodingParser;
 public:
-    virtual size_t parse(const char *data, size_t len) override {
+    virtual size_t parse(const char *data, size_t len) override
+    {
         if (contentLength_ == 0 || len == 0) {
             return 0;
         }
         len = std::min(contentLength_, len);
         contentLength_ -= len;
-        
+
         callbacks_.onBodyData(data, len);
         if (contentLength_ == 0) {
             callbacks_.onBodyComplete();
         }
-        
+
         return len;
     }
-    
+
+
+
 protected:
-    IdentityEncodingParser(Callbacks &callbacks, size_t contentLength) : contentLength_(contentLength), TransferEncodingParser(callbacks) { }
-    
+    IdentityEncodingParser(Callbacks &callbacks, size_t contentLength) : contentLength_(contentLength),
+                                                                         TransferEncodingParser(callbacks)
+    {}
+
+
+
 private:
-    
+
     size_t contentLength_;
 };
 
 
-class CloseEncodingParser : public TransferEncodingParser {
+class CloseEncodingParser : public TransferEncodingParser
+{
     friend TransferEncodingParser;
 public:
-    virtual size_t parse(const char *data, size_t len) override {
+    virtual size_t parse(const char *data, size_t len) override
+    {
         if (len != 0) {
             callbacks_.onBodyData(data, len);
         }
-        
+
         return len;
     }
-    
-    virtual void onClose() override {
+
+
+
+    virtual void onClose() override
+    {
         callbacks_.onBodyComplete();
     }
 
+
+
 protected:
-    CloseEncodingParser(Callbacks &callbacks) : TransferEncodingParser(callbacks) { }
-    
+    CloseEncodingParser(Callbacks &callbacks) : TransferEncodingParser(callbacks)
+    {}
+
 };
 
 
-class ChunkedEncodingParser : public TransferEncodingParser, public HeaderParser::Callbacks {
+class ChunkedEncodingParser : public TransferEncodingParser, public HeaderParser::Callbacks
+{
     friend TransferEncodingParser;
 public:
 
     virtual size_t parse(const char *data, size_t len) override;
+
     virtual void onHeader(const std::string &key, const std::string &value) override;
 
 protected:
     ChunkedEncodingParser(TransferEncodingParser::Callbacks &callbacks);
 
 private:
-    enum Mode {
+    enum Mode
+    {
         PARSING_CHUNK_LENGTH,
         PARSING_CHUNK_EXT,
         PARSING_CHUNK_HDR_LF,
@@ -73,29 +92,40 @@ private:
         PARSING_TRAILER,
         PARSING_FINISHED
     };
-    
+
     Mode mode_;
     size_t chunkSize_;
-    
+
     inline size_t parseChunkLength(const char *data, size_t len);
+
     inline size_t parseChunkExt(const char *data, size_t len);
+
     inline size_t parseChunkHdrLf(const char *data, size_t len);
+
     inline size_t parseChunkData(const char *data, size_t len);
+
     inline size_t parseChunkDataCr(const char *data, size_t len);
+
     inline size_t parseChunkDataLf(const char *data, size_t len);
+
     inline size_t parseTrailer(const char *data, size_t len);
-    
+
     HeaderParser trailerParser_;
 };
 
 
-TransferEncodingParser::TransferEncodingParser(TransferEncodingParser::Callbacks &callbacks) : callbacks_(callbacks) {
+
+TransferEncodingParser::TransferEncodingParser(TransferEncodingParser::Callbacks &callbacks) : callbacks_(callbacks)
+{
 
 }
 
+
+
 TransferEncodingParserPtr TransferEncodingParser::create(TransferEncodingParser::Callbacks &callbacks,
-                                                         const std::string &transferEncoding, int contentLength) {
-    
+                                                         const std::string &transferEncoding, int contentLength)
+{
+
     if ((transferEncoding.empty() || transferEncoding == "identity") && contentLength != -1) {
         return TransferEncodingParserPtr(new IdentityEncodingParser(callbacks, contentLength));
     } else if (transferEncoding == "chunked") {
@@ -103,17 +133,24 @@ TransferEncodingParserPtr TransferEncodingParser::create(TransferEncodingParser:
     } else if (transferEncoding.empty()) {
         return TransferEncodingParserPtr(new CloseEncodingParser(callbacks));
     }
-    
+
     return nullptr;
 }
 
-ChunkedEncodingParser::ChunkedEncodingParser(TransferEncodingParser::Callbacks &callbacks) : mode_(PARSING_CHUNK_LENGTH), TransferEncodingParser(callbacks),
+
+
+ChunkedEncodingParser::ChunkedEncodingParser(TransferEncodingParser::Callbacks &callbacks) : mode_(
+        PARSING_CHUNK_LENGTH), TransferEncodingParser(callbacks),
                                                                                              trailerParser_(this),
-                                                                                             chunkSize_(0) {
+                                                                                             chunkSize_(0)
+{
 
 }
 
-size_t ChunkedEncodingParser::parse(const char *data, size_t len) {
+
+
+size_t ChunkedEncodingParser::parse(const char *data, size_t len)
+{
     size_t oLen = len;
     do {
         size_t consumed = 0;
@@ -140,22 +177,24 @@ size_t ChunkedEncodingParser::parse(const char *data, size_t len) {
                 consumed = parseTrailer(data, len);
                 break;
         }
-        
+
         if (consumed == std::string::npos) {
             return std::string::npos;
         }
-        
+
         data += consumed;
         len -= consumed;
     } while (len > 0);
-    
+
     return oLen - len;
 }
 
 
-size_t ChunkedEncodingParser::parseChunkLength(const char *data, size_t len) {
+
+size_t ChunkedEncodingParser::parseChunkLength(const char *data, size_t len)
+{
     for (size_t i = 0; i < len; i++) {
-        switch(data[i]) {
+        switch (data[i]) {
             case '0':
             case '1':
             case '2':
@@ -195,11 +234,14 @@ size_t ChunkedEncodingParser::parseChunkLength(const char *data, size_t len) {
                 return std::string::npos;
         }
     }
-    
+
     return len;
 }
 
-size_t ChunkedEncodingParser::parseChunkExt(const char *data, size_t len) {
+
+
+size_t ChunkedEncodingParser::parseChunkExt(const char *data, size_t len)
+{
     for (size_t i = 0; i < len; i++) {
         switch (data[i]) {
             case '\r':
@@ -209,32 +251,38 @@ size_t ChunkedEncodingParser::parseChunkExt(const char *data, size_t len) {
                 break;
         }
     }
-    
+
     return len;
 }
 
-size_t ChunkedEncodingParser::parseChunkHdrLf(const char *data, size_t len) {
+
+
+size_t ChunkedEncodingParser::parseChunkHdrLf(const char *data, size_t len)
+{
     if (len == 0) {
         return 0;
     }
-    
+
     if (data[0] == '\n') {
         if (chunkSize_ == 0) {
             mode_ = PARSING_TRAILER;
         } else {
             mode_ = PARSING_CHUNK_DATA;
         }
-        
+
         return 1;
     }
-    
+
     callbacks_.onError("expected \\n after chunk header");
     return std::string::npos;
 }
 
-size_t ChunkedEncodingParser::parseChunkData(const char *data, size_t len) {
+
+
+size_t ChunkedEncodingParser::parseChunkData(const char *data, size_t len)
+{
     len = std::min(len, chunkSize_);
-    
+
     callbacks_.onBodyData(data, len);
     chunkSize_ -= len;
     if (chunkSize_ == 0) {
@@ -243,21 +291,27 @@ size_t ChunkedEncodingParser::parseChunkData(const char *data, size_t len) {
     return len;
 }
 
-size_t ChunkedEncodingParser::parseChunkDataCr(const char *data, size_t len) {
+
+
+size_t ChunkedEncodingParser::parseChunkDataCr(const char *data, size_t len)
+{
     if (len == 0) {
         return 0;
     }
-    
+
     if (data[0] == '\r') {
         mode_ = PARSING_CHUNK_DATA_LF;
         return 1;
     }
-    
+
     callbacks_.onError("expected \\r after chunk data");
     return std::string::npos;
 }
 
-size_t ChunkedEncodingParser::parseChunkDataLf(const char *data, size_t len) {
+
+
+size_t ChunkedEncodingParser::parseChunkDataLf(const char *data, size_t len)
+{
     if (len == 0) {
         return 0;
     }
@@ -271,7 +325,10 @@ size_t ChunkedEncodingParser::parseChunkDataLf(const char *data, size_t len) {
     return std::string::npos;
 }
 
-size_t ChunkedEncodingParser::parseTrailer(const char *data, size_t len) {
+
+
+size_t ChunkedEncodingParser::parseTrailer(const char *data, size_t len)
+{
     size_t ret = trailerParser_.parse(data, len);
     if (ret == std::string::npos) {
         callbacks_.onError("failed to parse trailer");
@@ -283,6 +340,9 @@ size_t ChunkedEncodingParser::parseTrailer(const char *data, size_t len) {
     return ret;
 }
 
-void ChunkedEncodingParser::onHeader(const std::string &key, const std::string &value) {
-    
+
+
+void ChunkedEncodingParser::onHeader(const std::string &key, const std::string &value)
+{
+
 }
