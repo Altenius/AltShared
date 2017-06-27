@@ -12,7 +12,9 @@ public:
         MODE_READ,
         MODE_WRITE,
         MODE_APPEND,
-        MODE_READWRITE
+        MODE_READWRITE,
+        MODE_READ_BINARY,
+        MODE_WRITE_BINARY
     };
 
     File();
@@ -21,6 +23,7 @@ public:
      * using isOpen(). */
     File(const std::string &path, OpenMode mode);
 
+    /* Closes the file if it is still open. */
     ~File();
 
     /* Closes the file if it is open. */
@@ -45,10 +48,13 @@ public:
      * is the beginning of the file. Returns the new position
      * of the stream. */
     int seek(uint32_t offset, int whence = SEEK_SET);
-    
+
     /* Returns the current position in the stream. */
     int tell();
-    
+
+    /* Returns true if the position is at the end of the file. */
+    bool eof();
+
     /* Reads the rest of the file into a string. Returns the amount
      * read. */
     int readRemaining(std::string &out);

@@ -10,7 +10,14 @@ File::File() : m_file(nullptr)
 
 
 
-File::File(const std::string &path, OpenMode mode)
+File::~File()
+{
+    close();
+}
+
+
+
+File::File(const std::string &path, OpenMode mode) : m_file(nullptr)
 {
     open(path, mode);
 }
@@ -24,22 +31,36 @@ bool File::open(const std::string &path, OpenMode mode)
 
     switch (mode) {
         case MODE_READ:
-            oMode = "rb";
+            oMode = "r";
             break;
         case MODE_APPEND:
-            oMode = "a+";
+            oMode = "a";
             break;
         case MODE_READWRITE:
-            oMode = "rw+";
+            oMode = "rw";
             break;
         case MODE_WRITE:
-            oMode = "wb";
+            oMode = "w";
             break;
+        case MODE_READ_BINARY:
+            oMode = "rb";
+            break;
+        case MODE_WRITE_BINARY:
+            oMode = "wb";
     }
 
     assert(oMode != nullptr);
 
     return ((m_file = fopen(path.c_str(), oMode)) != nullptr);
+}
+
+
+
+bool File::eof()
+{
+    assert(isOpen());
+
+    return feof(m_file) != 0;
 }
 
 
