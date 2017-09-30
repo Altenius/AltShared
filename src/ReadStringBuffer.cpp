@@ -2,10 +2,10 @@
 #include <cstring>
 
 
-
 bool ReadStringBuffer::readBuffer(char *dst, size_t len)
 {
-    if (buffer_ == nullptr || (bufferEnd_ - pointer_ < len)) {
+    if (buffer_ == nullptr || (bufferEnd_ - pointer_ < len))
+    {
         return false;
     }
 
@@ -16,17 +16,17 @@ bool ReadStringBuffer::readBuffer(char *dst, size_t len)
 }
 
 
-
 ReadStringBuffer::~ReadStringBuffer()
 {
     free(buffer_);
 }
 
 
-
 ReadStringBuffer::ReadStringBuffer(const std::string &string)
 {
-    if ((buffer_ = reinterpret_cast<char *>(malloc(string.length()))) == nullptr) {
+    if ((buffer_ = reinterpret_cast<char *>(malloc(string.length()))) ==
+        nullptr)
+    {
         return;
     }
     pointer_ = buffer_;
@@ -36,10 +36,10 @@ ReadStringBuffer::ReadStringBuffer(const std::string &string)
 }
 
 
-
 ReadStringBuffer::ReadStringBuffer(const char *data, size_t len)
 {
-    if ((buffer_ = reinterpret_cast<char *>(malloc(len))) == nullptr) {
+    if ((buffer_ = reinterpret_cast<char *>(malloc(len))) == nullptr)
+    {
         return;
     }
     pointer_ = buffer_;
@@ -49,22 +49,23 @@ ReadStringBuffer::ReadStringBuffer(const char *data, size_t len)
 }
 
 
-
 void ReadStringBuffer::seek(uint32_t seekAmount, SeekDir dir)
 {
-    switch (dir) {
-        case SK_BEG:
-            pointer_ = buffer_ + seekAmount;
-            break;
-        case SK_CUR:
-            pointer_ += seekAmount;
-            break;
-        case SK_END:
-            pointer_ = bufferEnd_ + seekAmount;
-            break;
+    switch (dir)
+    {
+    case SK_BEG:
+        pointer_ = buffer_ + seekAmount;
+        break;
+    case SK_CUR:
+        pointer_ += seekAmount;
+        break;
+    case SK_END:
+        pointer_ = bufferEnd_ + seekAmount;
+        break;
     }
-    
-    if (pointer_ < buffer_) {
+
+    if (pointer_ < buffer_)
+    {
         pointer_ = buffer_;
     }
 }

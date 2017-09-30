@@ -1,41 +1,34 @@
 #ifndef ALT_HTTPPARSER_H
 #define ALT_HTTPPARSER_H
 
-#include <string>
-#include <memory>
+#include "ContentDecoder.h"
 #include "HeaderParser.h"
 #include "TransferEncodingParser.h"
-#include "ContentDecoder.h"
+#include <memory>
+#include <string>
 
-class HttpParser
-        : public HeaderParser::Callbacks, public TransferEncodingParser::Callbacks, public ContentDecoder::Callbacks
+class HttpParser : public HeaderParser::Callbacks,
+                   public TransferEncodingParser::Callbacks,
+                   public ContentDecoder::Callbacks
 {
 public:
     class Callbacks
     {
     public:
-        virtual void onStatusLine(const std::string &line)
-        {};
+        virtual void onStatusLine(const std::string &line){};
 
 
-
-        virtual void onHeadersFinished()
-        {};
+        virtual void onHeadersFinished(){};
 
 
-
-        virtual void onHeader(const std::string &key, const std::string &value)
-        {};
-
+        virtual void onHeader(const std::string &key,
+                              const std::string &value){};
 
 
-        virtual void onBody(const std::string &body)
-        {};
+        virtual void onBody(const std::string &body){};
 
 
-
-        virtual void onError(const std::string &error)
-        {};
+        virtual void onError(const std::string &error){};
     };
 
     typedef std::shared_ptr<Callbacks> CallbacksPtr;
@@ -44,7 +37,8 @@ public:
 
     size_t parse(const char *data, size_t size);
 
-    virtual void onHeader(const std::string &key, const std::string &value) override;
+    virtual void onHeader(const std::string &key,
+                          const std::string &value) override;
 
     virtual void onBodyData(const char *data, size_t len) override;
 
@@ -79,4 +73,4 @@ private:
 };
 
 
-#endif //VOCABBOT_HTTPPARSER_H
+#endif // VOCABBOT_HTTPPARSER_H

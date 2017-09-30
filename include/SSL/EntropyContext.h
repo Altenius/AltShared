@@ -11,12 +11,10 @@ public:
     ~EntropyContext();
 
 
-
     mbedtls_entropy_context *context()
     {
         return &context_;
     }
-
 
 
 private:
@@ -24,4 +22,4 @@ private:
 };
 
 
-#endif //VOCABBOT_ENTROPYCONTEXT_H
+#endif // VOCABBOT_ENTROPYCONTEXT_H

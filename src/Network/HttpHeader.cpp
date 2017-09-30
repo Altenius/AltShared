@@ -1,12 +1,9 @@
 #include "Network/HttpHeader.h"
 
 
-
 HttpHeader::HttpHeader()
 {
-
 }
-
 
 
 void HttpHeader::add(const char *name, const char *value)
@@ -17,7 +14,6 @@ void HttpHeader::add(const char *name, const char *value)
 }
 
 
-
 void HttpHeader::add(const std::string &name, const std::string &value)
 {
     EntryType pair(name, value);
@@ -26,10 +22,10 @@ void HttpHeader::add(const std::string &name, const std::string &value)
 }
 
 
-
 void HttpHeader::addDefault(const char *name, const std::string &value)
 {
-    if (map_.find(name) == map_.end()) {
+    if (map_.find(name) == map_.end())
+    {
         add(name, value);
     }
 }

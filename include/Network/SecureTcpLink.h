@@ -1,8 +1,8 @@
 #ifndef ALT_SECURETCPLINK_H
 #define ALT_SECURETCPLINK_H
 
-#include <memory>
 #include "TcpLink.h"
+#include <memory>
 
 
 class SecureTcpLink;
@@ -12,7 +12,8 @@ class TcpSslContext : public SslContext
 public:
     TcpSslContext(SecureTcpLink *link);
 
-    virtual int send(const unsigned char *buf, size_t len) override; // always returns len
+    virtual int send(const unsigned char *buf,
+                     size_t len) override; // always returns len
     void onReceive(const char *buf, size_t len);
 
     void onWrite(); // called from SecureTcpLink to try handshaking
@@ -45,18 +46,17 @@ public:
     void onSslRead(const char *buf, size_t len);
 
 
-
     inline bool valid()
     {
         return valid_;
     }
 
 
-
 protected:
     friend TcpLink;
 
-    SecureTcpLink(Callbacks &callbacks, bool client, const char *hostname = nullptr);
+    SecureTcpLink(Callbacks &callbacks, bool client,
+                  const char *hostname = nullptr);
 
 private:
     virtual void onDataRead(const char *data, size_t len) override;
@@ -71,4 +71,4 @@ private:
 };
 
 
-#endif //VOCABBOT_SECURETCPLINK_H
+#endif // VOCABBOT_SECURETCPLINK_H

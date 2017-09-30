@@ -1,10 +1,10 @@
 #ifndef ALT_NETWORK_HANDLER_H
 #define ALT_NETWORK_HANDLER_H
 
-#include <event2/event.h>
-#include <event2/dns.h>
-#include <thread>
 #include "TcpLink.h"
+#include <event2/dns.h>
+#include <event2/event.h>
+#include <thread>
 
 class NetworkHandler
 {
@@ -16,12 +16,10 @@ public:
     void terminate();
 
 
-
     inline event_base *event()
     {
         return event_;
     }
-
 
 
     inline evdns_base *evdns()
@@ -30,18 +28,15 @@ public:
     }
 
 
-
     void addLink(TcpLinkPtr link);
 
     void removeLink(TcpLink *link);
-
 
 
     inline void join()
     {
         run_thread_.join();
     }
-
 
 
 protected:
@@ -62,4 +57,4 @@ private:
 };
 
 
-#endif //VOCABBOT_NETWORK_HANDLER_H
+#endif // VOCABBOT_NETWORK_HANDLER_H

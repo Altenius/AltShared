@@ -3,17 +3,16 @@
 #include <algorithm>
 
 
-
-HeaderParser::HeaderParser(Callbacks *callbacks) : callbacks_(callbacks), done_(false)
+HeaderParser::HeaderParser(Callbacks *callbacks)
+    : callbacks_(callbacks), done_(false)
 {
-
 }
-
 
 
 size_t HeaderParser::parse(const char *data, size_t len)
 {
-    if (done_) {
+    if (done_)
+    {
         return 0;
     }
 
@@ -22,14 +21,17 @@ size_t HeaderParser::parse(const char *data, size_t len)
     buffer_.append(data, len);
 
     size_t lineEnd = buffer_.find("\r\n", sStart);
-    if (lineEnd == std::string::npos) {
+    if (lineEnd == std::string::npos)
+    {
         // not a full line
         return len;
     }
 
     size_t last = 0;
-    do {
-        if (last == lineEnd) {
+    do
+    {
+        if (last == lineEnd)
+        {
             done_ = true;
             size_t bLen = buffer_.size();
             buffer_.clear();
@@ -37,7 +39,8 @@ size_t HeaderParser::parse(const char *data, size_t len)
             return len - (bLen - lineEnd) + 2;
         }
 
-        if (!parseLine(data + last, lineEnd - last)) {
+        if (!parseLine(data + last, lineEnd - last))
+        {
             // error
             done_ = true;
             return std::string::npos;
@@ -52,11 +55,12 @@ size_t HeaderParser::parse(const char *data, size_t len)
 }
 
 
-
 bool HeaderParser::parseLine(const char *data, size_t len)
 {
-    if (data[0] == ' ' || data[0] == '\t') { // continuation
-        if (lastKey_.empty()) {
+    if (data[0] == ' ' || data[0] == '\t')
+    { // continuation
+        if (lastKey_.empty())
+        {
             return false;
         }
 
@@ -66,24 +70,28 @@ bool HeaderParser::parseLine(const char *data, size_t len)
 
     sendLast();
     auto pos = std::find(data, data + len, ':');
-    if (pos == data + len || pos == data) { // no colon or blank key
+    if (pos == data + len || pos == data)
+    { // no colon or blank key
         return false;
     }
 
     lastKey_.assign(data, pos);
-    if (pos != data + len - 1) {
+    if (pos != data + len - 1)
+    {
         lastValue_.assign(pos + 1, data + len);
-    } else {
+    }
+    else
+    {
         lastValue_.clear();
     }
     return true;
 }
 
 
-
 void HeaderParser::sendLast()
 {
-    if (!lastKey_.empty()) {
+    if (!lastKey_.empty())
+    {
         StringUtil::trim(lastKey_);
         StringUtil::trim(lastValue_);
         callbacks_->onHeader(lastKey_, lastValue_);
@@ -91,7 +99,6 @@ void HeaderParser::sendLast()
         lastValue_.clear();
     }
 }
-
 
 
 void HeaderParser::reset()

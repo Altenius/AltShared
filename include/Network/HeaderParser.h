@@ -9,8 +9,8 @@ public:
     class Callbacks
     {
     public:
-        virtual void onHeader(const std::string &key, const std::string &value)
-        {};
+        virtual void onHeader(const std::string &key,
+                              const std::string &value){};
     };
 
     typedef std::shared_ptr<Callbacks> CallbacksPtr;
@@ -20,12 +20,10 @@ public:
     size_t parse(const char *data, size_t len);
 
 
-
     inline bool done()
     {
         return done_;
     }
-
 
 
     void reset();

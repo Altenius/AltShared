@@ -1,13 +1,14 @@
 #include <Network/ContentDecoder.h>
-#include <zlib.h>
 #include <cstring>
 #include <stdint.h>
+#include <zlib.h>
 
 #define GZIP_BUFSIZE 8192
 
 class GzipContentDecoder : public ContentDecoder
 {
     friend ContentDecoder;
+
 public:
     GzipContentDecoder(Callbacks &callbacks);
 
@@ -23,20 +24,19 @@ private:
 };
 
 
-
 ContentDecoder::ContentDecoder(Callbacks &callbacks) : callbacks_(callbacks)
 {
-
 }
 
 
-
-GzipContentDecoder::GzipContentDecoder(Callbacks &callbacks) : ContentDecoder(callbacks), initialized_(false)
+GzipContentDecoder::GzipContentDecoder(Callbacks &callbacks)
+    : ContentDecoder(callbacks), initialized_(false)
 {
-    std::memset((void *) &stream, 0, sizeof(z_stream));
+    std::memset((void *)&stream, 0, sizeof(z_stream));
 
     int res = inflateInit2(&stream, 31); // 31: gzip only
-    if (res != Z_OK) {
+    if (res != Z_OK)
+    {
         callbacks_.onError("Could not initialize zlib stream");
         return;
     }
@@ -45,34 +45,37 @@ GzipContentDecoder::GzipContentDecoder(Callbacks &callbacks) : ContentDecoder(ca
 }
 
 
-
 GzipContentDecoder::~GzipContentDecoder()
 {
-    if (initialized_) {
+    if (initialized_)
+    {
         inflateEnd(&stream);
     }
 }
 
 
-
 size_t GzipContentDecoder::parse(const char *data, size_t len)
 {
-    uint8_t *data_in = (uint8_t *) data;
+    uint8_t *data_in = (uint8_t *)data;
     stream.next_in = data_in;
     stream.avail_in = len;
     stream.next_out = buffer;
     stream.avail_out = GZIP_BUFSIZE;
 
 
-    do {
+    do
+    {
         int res = inflate(&stream, 0);
-        if (!(res == Z_OK || res == Z_STREAM_END)) {
+        if (!(res == Z_OK || res == Z_STREAM_END))
+        {
             callbacks_.onError("inflate() failed");
             return 0;
         }
 
-        if (stream.avail_out != GZIP_BUFSIZE) {
-            callbacks_.onDecodedBodyData((char *) buffer, GZIP_BUFSIZE - stream.avail_out);
+        if (stream.avail_out != GZIP_BUFSIZE)
+        {
+            callbacks_.onDecodedBodyData((char *)buffer,
+                                         GZIP_BUFSIZE - stream.avail_out);
             stream.next_out = buffer;
             stream.avail_out = GZIP_BUFSIZE;
         }
@@ -82,12 +85,15 @@ size_t GzipContentDecoder::parse(const char *data, size_t len)
 }
 
 
-
-ContentDecoderPtr ContentDecoder::create(Callbacks &callbacks, const std::string &contentEncoding)
+ContentDecoderPtr ContentDecoder::create(Callbacks &callbacks,
+                                         const std::string &contentEncoding)
 {
-    if (contentEncoding == "gzip") {
+    if (contentEncoding == "gzip")
+    {
         return ContentDecoderPtr(new GzipContentDecoder(callbacks));
-    } else {
+    }
+    else
+    {
         return nullptr;
     }
 }

@@ -1,11 +1,11 @@
 #ifndef ALT_HTTPHEADER_H
 #define ALT_HTTPHEADER_H
 
-#include <utility>
-#include <vector>
+#include <sstream>
 #include <string>
 #include <unordered_map>
-#include <sstream>
+#include <utility>
+#include <vector>
 
 class HttpHeader
 {
@@ -23,12 +23,10 @@ public:
     void addDefault(const char *name, const std::string &value);
 
 
-
     inline HeaderType &header()
     {
         return header_;
     }
-
 
 
     inline MapType &map()
@@ -37,13 +35,11 @@ public:
     }
 
 
-
     inline void reset()
     {
         map_.clear();
         header_.clear();
     }
-
 
 
 private:

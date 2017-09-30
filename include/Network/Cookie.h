@@ -1,22 +1,26 @@
 #ifndef ALT_COOKIE_H
 #define ALT_COOKIE_H
 
-#include <string>
 #include <chrono>
-#include <vector>
 #include <memory>
+#include <string>
+#include <vector>
 
 class Cookie
 {
 public:
     typedef std::chrono::system_clock::time_point TimeType;
 
-    Cookie(const std::string &name, const std::string &value);
+    Cookie(
+        const std::string &name, const std::string &value,
+        const std::string &domain = "", const std::string &path = "",
+        bool httpOnly = false, bool secure = false,
+        TimeType expires = TimeType(std::chrono::duration<unsigned long>(0)));
 
     Cookie();
 
-    static Cookie parse(const std::string &value, const std::string &domain, const std::string &path);
-
+    static Cookie parse(const std::string &value, const std::string &domain,
+                        const std::string &path);
 
 
     inline bool valid()
@@ -25,12 +29,10 @@ public:
     }
 
 
-
     inline std::string name()
     {
         return name_;
     }
-
 
 
     inline std::string value()
@@ -39,12 +41,10 @@ public:
     }
 
 
-
     inline std::string domain()
     {
         return domain_;
     }
-
 
 
     inline std::string path()
@@ -53,12 +53,10 @@ public:
     }
 
 
-
     inline bool httpOnly()
     {
         return httpOnly_;
     }
-
 
 
     inline bool secure()
@@ -67,26 +65,27 @@ public:
     }
 
 
-
     inline bool expired()
     {
-        return expires_.time_since_epoch() != std::chrono::system_clock::duration::zero() &&
+        return expires_.time_since_epoch() !=
+                   std::chrono::system_clock::duration::zero() &&
                std::chrono::system_clock::now() > expires_;
     }
 
 
-
     inline bool expired(const std::chrono::system_clock::time_point &now)
     {
-        return expires_.time_since_epoch() != std::chrono::system_clock::duration::zero() && now > expires_;
+        return expires_.time_since_epoch() !=
+                   std::chrono::system_clock::duration::zero() &&
+               now > expires_;
     }
-
 
 
     bool parseDate(const std::string &date);
 
     bool usable(const std::string &domain,
-                const std::string &path); // path must be an absolute path (StringUtil::absolutePath())
+                const std::string &path); // path must be an absolute path
+                                          // (StringUtil::absolutePath())
 
 protected:
     std::string name_, value_, domain_, path_;
@@ -103,18 +102,27 @@ typedef std::shared_ptr<CookieJar> CookieJarPtr;
 class CookieJar
 {
 public:
-
-    void parse(const std::string &str, const std::string &domain, const std::string &path);
+    void parse(const std::string &str, const std::string &domain,
+               const std::string &path);
 
     std::string getCookies(const std::string &domain, const std::string &path);
 
+    inline void addCookie(const Cookie &cookie)
+    {
+        cookies_.push_back(cookie);
+    }
+
+
+    inline void clear()
+    {
+        cookies_.clear();
+    }
 
 
     static inline CookieJarPtr create()
     {
         return CookieJarPtr(new CookieJar);
     }
-
 
 
 protected:

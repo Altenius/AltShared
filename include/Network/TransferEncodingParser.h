@@ -1,8 +1,8 @@
 #ifndef ALT_TRANSFERENCODINGPARSER_H
 #define ALT_TRANSFERENCODINGPARSER_H
 
-#include <string>
 #include <memory>
+#include <string>
 
 
 class TransferEncodingParser;
@@ -15,29 +15,23 @@ public:
     class Callbacks
     {
     public:
-        virtual void onBodyData(const char *data, size_t len)
-        {};
+        virtual void onBodyData(const char *data, size_t len){};
 
 
-
-        virtual void onBodyComplete()
-        {};
+        virtual void onBodyComplete(){};
 
 
-
-        virtual void onError(const std::string &error)
-        {};
+        virtual void onError(const std::string &error){};
     };
 
-    virtual size_t parse(const char *data, size_t len) =0;
+    virtual size_t parse(const char *data, size_t len) = 0;
 
 
+    virtual void onClose(){};
 
-    virtual void onClose()
-    {};
-
-    static TransferEncodingParserPtr
-    create(Callbacks &callbacks, const std::string &transferEncoding, int contentLength);
+    static TransferEncodingParserPtr create(Callbacks &callbacks,
+                                            const std::string &transferEncoding,
+                                            int contentLength);
 
 protected:
     TransferEncodingParser(Callbacks &callbacks);
@@ -45,7 +39,6 @@ protected:
     Callbacks &callbacks_;
 
 private:
-
 };
 
 

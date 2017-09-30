@@ -1,6 +1,5 @@
-#include <iostream>
 #include "Network/NetworkHandler.h"
-
+#include <iostream>
 
 
 NetworkHandler &NetworkHandler::get()
@@ -10,21 +9,18 @@ NetworkHandler &NetworkHandler::get()
 }
 
 
-
 NetworkHandler::NetworkHandler() : hasTerminated_(true)
 {
-
 }
-
 
 
 NetworkHandler::~NetworkHandler()
 {
-    if (!hasTerminated_) {
+    if (!hasTerminated_)
+    {
         terminate();
     }
 }
-
 
 
 void NetworkHandler::init()
@@ -39,10 +35,10 @@ void NetworkHandler::init()
 }
 
 
-
 void NetworkHandler::terminate()
 {
-    if (!hasTerminated_) {
+    if (!hasTerminated_)
+    {
         hasTerminated_ = true;
         event_base_loopbreak(event_);
         run_thread_.detach();
@@ -52,12 +48,10 @@ void NetworkHandler::terminate()
 }
 
 
-
 void NetworkHandler::runLoop(NetworkHandler *handler)
 {
     event_base_loop(handler->event_, EVLOOP_NO_EXIT_ON_EMPTY);
 }
-
 
 
 void NetworkHandler::addLink(TcpLinkPtr link)
@@ -66,11 +60,12 @@ void NetworkHandler::addLink(TcpLinkPtr link)
 }
 
 
-
 void NetworkHandler::removeLink(TcpLink *link)
 {
-    for (auto it = connections_.begin(); it != connections_.end(); it++) {
-        if (it->get() == link) {
+    for (auto it = connections_.begin(); it != connections_.end(); it++)
+    {
+        if (it->get() == link)
+        {
             connections_.erase(it);
             return;
         }

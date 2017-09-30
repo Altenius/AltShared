@@ -1,9 +1,9 @@
 #ifndef VOCABBOT_CTRDRBGCONTEXT_H
 #define VOCABBOT_CTRDRBGCONTEXT_H
 
+#include "EntropyContext.h"
 #include <mbedtls/ctr_drbg.h>
 #include <memory>
-#include "EntropyContext.h"
 
 class CtrDrbgContext
 {
@@ -15,12 +15,10 @@ public:
     int init();
 
 
-
     inline mbedtls_ctr_drbg_context *context()
     {
         return &context_;
     }
-
 
 
 private:
@@ -31,4 +29,4 @@ private:
 typedef std::shared_ptr<CtrDrbgContext> CtrDrbgContextPtr;
 
 
-#endif //VOCABBOT_CTRDRBGCONTEXT_H
+#endif // VOCABBOT_CTRDRBGCONTEXT_H

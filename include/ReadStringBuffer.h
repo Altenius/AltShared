@@ -24,4 +24,4 @@ private:
     char *pointer_;
 };
 
-#endif //OPENCEMULATOR_READSTRINGBUFFER_H
+#endif // OPENCEMULATOR_READSTRINGBUFFER_H

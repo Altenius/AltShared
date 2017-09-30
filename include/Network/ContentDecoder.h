@@ -13,35 +13,29 @@ public:
     class Callbacks
     {
     public:
-        virtual void onDecodedBodyData(const char *data, size_t len)
-        {};
+        virtual void onDecodedBodyData(const char *data, size_t len){};
 
 
-
-        virtual void onError(const std::string &error)
-        {};
+        virtual void onError(const std::string &error){};
     };
 
-    virtual size_t parse(const char *data, size_t len) =0;
+    virtual size_t parse(const char *data, size_t len) = 0;
 
 
+    virtual void onClose(){};
 
-    virtual void onClose()
-    {};
-
-    static ContentDecoderPtr create(Callbacks &callbacks, const std::string &contentEncoding);
-
+    static ContentDecoderPtr create(Callbacks &callbacks,
+                                    const std::string &contentEncoding);
 
 
-    virtual ~ContentDecoder()
-    {};
+    virtual ~ContentDecoder(){};
+
 protected:
     ContentDecoder(Callbacks &callbacks);
 
     Callbacks &callbacks_;
 
 private:
-
 };
 
 #endif

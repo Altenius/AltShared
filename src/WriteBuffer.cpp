@@ -1,12 +1,9 @@
 #include "WriteBuffer.h"
 
 
-
 WriteBuffer::WriteBuffer()
 {
-
 }
-
 
 
 void WriteBuffer::writeString(const std::string &string)

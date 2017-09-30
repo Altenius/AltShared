@@ -63,4 +63,4 @@ private:
     FILE *m_file;
 };
 
-#endif //OPENCEMULATOR_FILE_H
+#endif // OPENCEMULATOR_FILE_H

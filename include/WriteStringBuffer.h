@@ -12,16 +12,14 @@ public:
     }
 
 
-
     inline const std::string &buffer()
     {
         return buffer_;
     }
 
 
-
 private:
     std::string buffer_;
 };
 
-#endif //OPENCEMULATOR_WRITESTRINGBUFFER_H
+#endif // OPENCEMULATOR_WRITESTRINGBUFFER_H
